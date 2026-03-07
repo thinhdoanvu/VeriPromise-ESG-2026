@@ -7,21 +7,22 @@
 ## Step 1. Create NLP environment in Conda  
 (Install Conda first)
 
-```bash
+```
 conda create -n NLP python=3.10
 conda activate NLP
-
+```
 
 ## Step 2. Install depedencies for NLP env via pip
-```bash
+```
 pip install tiktoken chromadb pandas transformers sentence-transformers nltk spacy jieba tqdm
-
+```
 
 ## Step 3. Install Torch compatible with CUDA  
 Get the right command from PyTorch official site.  
 Example:  
-```bash
+```
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+```
 
 ## Step 4. Download Ollama 
 Download here from https://ollama.com/download
@@ -29,23 +30,24 @@ Download here from https://ollama.com/download
 ## Step 5. Install Ollama 
 
 ## Step 6. Create folders in D:\ (to save disk space in C:\)  
-```bash
+```
 D:\
   └── .ollama\
        ├── models\
        ├── manifests\
        ├── blobs\
        └── config\
-
+```
 DON't DELETE .ollama folder in C:\USERS\...
 
 ## Step 7. Set models location
-```bash
+```
 Open Ollama Settings  
 Set Model location = D:\.ollama\models  
+```
 
 ## Step 8. Install models via pull command
-```bash
+```
 ollama pull llama3:8b
 ollama pull llama3:70b
 ollama pull deepseek-r1:8b
@@ -53,13 +55,15 @@ ollama pull deepseek-r1:70b
 ollama pull gemma2:27b
 ollama pull qwen2:72b
 ollama pull gpt-oss:120b
+```
 
 ## Step 9. Download llcouncil
-```bash
+```
 git clone https://github.com/karpathy/llm-council.git
+```
 
 ## Step 10. Edit config.py
-```bash
+```
 import os
 from openai import OpenAI
 
@@ -306,9 +310,10 @@ class ModelManager:
 
 
 print(f"✅ ModelManager Streamlined: Ready for {len(PRIORITY_MAP)} synchronized councils.")
+```
 
 ## Step 11. Testing
-```bash 
+```
 import sys, os, importlib
 from openai import OpenAI
 
@@ -352,6 +357,7 @@ if __name__ == "__main__":
     # print(resp)
 
     test_models()
+```
 
 ## Expected Output
 
