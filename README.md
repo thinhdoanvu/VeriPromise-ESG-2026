@@ -1,3 +1,3 @@
 # VeriPromise-ESG-2026
-Introduction: https://veripromiseesg.github.io/
+Introduction: https://veripromiseesg.github.io/  
 Dataset: https://www.aidea-web.tw/aicup_veripromiseesg
