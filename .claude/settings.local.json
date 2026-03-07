@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rsync -avz --exclude '.git' /Users/nhannguyen/Documents/VeriPromise-ESG-2026/ nhan@bysonduong.ddns.net:~/VeriPromise-ESG-2026/)",
+      "Bash(git init:*)",
+      "Bash(git:*)",
+      "Bash(find:*)"
+    ]
+  }
+}
