@@ -14,7 +14,7 @@ conda activate NLP
 
 ## Step 2. Install depedencies for NLP env via pip
 ```
-pip install tiktoken chromadb pandas transformers sentence-transformers nltk spacy jieba tqdm
+pip install tiktoken chromadb pandas transformers sentence-transformers nltk spacy jieba tqdm openai 
 ```
 
 ## Step 3. Install Torch compatible with CUDA  
