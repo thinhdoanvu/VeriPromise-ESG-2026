@@ -4,55 +4,77 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VeriPromise-ESG-2026 is a competition entry for the [AICup VeriPromise ESG challenge](https://www.aidea-web.tw/aicup_veripromiseesg). The goal is to analyze corporate ESG (Environmental, Social, Governance) disclosures in Traditional Chinese and classify them for:
-- **promise_status** / **promise_string** — whether the text contains a commitment
-- **verification_timeline** — when the commitment will be fulfilled (already, within_2_years, between_2_and_5_years, longer_than_5_years, N/A)
-- **evidence_status** / **evidence_string** / **evidence_quality** — supporting evidence and its quality
+VeriPromise-ESG-2026 is a competition entry for the [AICup VeriPromise ESG challenge](https://www.aidea-web.tw/aicup_veripromiseesg). The goal is to classify Traditional Chinese corporate ESG disclosures into:
+- **promise_status** ("Yes"/"No") + **promise_string** — whether text contains a commitment
+- **verification_timeline** — "already", "within_2_years", "between_2_and_5_years", "longer_than_5_years", "N/A"
+- **evidence_status** ("Yes"/"No"/"N/A") + **evidence_string** + **evidence_quality** ("Clear"/"Not Clear"/"Misleading"/"N/A")
 
-## Architecture
+**Competition scoring:** `Total = Commitment_F1 × 0.20 + Evidence_F1 × 0.30 + Clarity_MacroF1 × 0.35 + Timeline_MacroF1 × 0.15`
 
-The system uses local LLMs via **Ollama** (OpenAI-compatible API at `localhost:11434/v1`) with a "council" pattern — multiple large models (qwen2:72b, gemma2:27b, llama3:70b, deepseek-r1:70b) organized into councils that evaluate different aspects.
-
-### Key Files
-
-- `code/config.py` — Central configuration: Ollama connection, council definitions (`PRIORITY_MAP`), model parameters, and `ModelManager` class (model selection with priority fallback and VRAM failure blacklisting)
-- `code/main.py` — Main pipeline: reads CSV dataset, sends each row to LLM with a detailed few-shot prompt, parses JSON response, saves results incrementally in batches of 20
-- `code/slang.py` — Experimental script to build a slang/token dictionary by classifying tokens into timeline/evidence/clarity categories using LLM + jieba tokenization
-- `code/test_models.py` — Tests all configured models across all councils
-- `code/check_hethong.py` — System check: PyTorch, CUDA, GPU info, AMP verification
-
-### Data
-
-- `datasets/vpesg4k_train_1000 V1.csv` / `.json` — Training data (1000 samples)
-- `datasets/slang_esc.json` — Generated slang dictionary
+Test submission window: June 10-17 2026.
 
 ## Development Setup
 
-Requires Conda environment with Python 3.10:
 ```bash
 conda activate NLP
 ```
 
-Key dependencies: `openai`, `pandas`, `transformers`, `sentence-transformers`, `jieba`, `nltk`, `torch`, `tqdm`, `chromadb`, `tiktoken`, `spacy`
+API keys are in `.env` (gitignored). Default backend is **OpenRouter** (`OPENROUTER_API_KEY`). Set `USE_OLLAMA=true` in `.env` to use local Ollama instead.
 
-Ollama must be running locally with the required models pulled (see `code/install.md` for full setup).
-
-## Running
+## Commands
 
 ```bash
-# Check system/GPU status
-python code/check_hethong.py
+# Run the main ESG classification pipeline (default: DeepSeek V3 via OpenRouter)
+conda run -n NLP python code/main.py
 
-# Test all council models are responding
-python code/test_models.py
+# Run with a specific model (preset name or full model ID)
+conda run -n NLP python code/main.py --model gemini-flash
+conda run -n NLP python code/main.py --model qwen2.5-72b
 
-# Run main ESG analysis pipeline
-python code/main.py
+# Run on a subset for testing
+conda run -n NLP python code/main.py --limit 50 --output datasets/output_test.csv
+
+# Evaluate predictions against training ground truth
+conda run -n NLP python code/evaluate.py
+conda run -n NLP python code/evaluate.py --predictions datasets/output_test.csv
+
+# System checks
+conda run -n NLP python code/check_hethong.py   # GPU/CUDA status
+conda run -n NLP python code/test_models.py      # Test Ollama model connectivity
 ```
+
+## Architecture
+
+The pipeline sends each ESG text sample to an LLM with a few-shot prompt, parses the JSON response, validates fields with cascading logic, and saves results incrementally in batches of 20.
+
+### Key Files
+
+- `code/config.py` — API backend selection (OpenRouter vs Ollama), model presets (`MODELS` dict), `ENSEMBLE_MODELS` list, shared `client` instance. Loads `.env` for API keys.
+- `code/main.py` — Main pipeline. Contains the full prompt (`SYSTEM_PROMPT` + `FEW_SHOT_EXAMPLES`), JSON parsing with regex fallback, field validation (`validate_result`), and retry logic. CLI args: `--model`, `--input`, `--output`, `--limit`.
+- `code/evaluate.py` — Computes exact competition score. Loads GT from JSON (not CSV, to preserve "N/A" strings). Outputs per-task metrics, confusion matrices, and saves error details to `datasets/evaluation_errors.csv`.
+
+### Data Flow
+
+1. Input: `datasets/vpesg4k_train_1000 V1.csv` (or `.json` for ground truth)
+2. Each row → `build_prompt()` → LLM API → `parse_json_response()` → `validate_result()` → output CSV
+3. Resume support: skips IDs already present in output CSV
+
+### Cascading Validation Logic (in `validate_result`)
+
+- `promise_status="No"` → forces all downstream fields to N/A/empty
+- `evidence_status` in ("No", "N/A") → forces `evidence_string=""`, `evidence_quality="N/A"`
+
+### Model Presets (in `config.MODELS`)
+
+Available via `--model` flag: `deepseek-v3`, `qwen3`, `qwen2.5-72b`, `gemini-flash`, `deepseek-r1`, `llama4-maverick`, `gpt-4.1-mini`, plus local Ollama models.
+
+## Baseline Score (gemma3:27b local)
+
+**0.6333** — Main weaknesses: Clarity Macro-F1 = 0.3181 (fails on "Not Clear"), Timeline Macro-F1 = 0.5127 (over-predicts `between_2_and_5_years`).
 
 ## Notes
 
-- Code comments and documentation are primarily in Vietnamese
-- The main pipeline supports resume — it skips already-processed IDs found in the output CSV
-- `main.py` currently hardcodes `llama3:70b` rather than using `ModelManager` from config
-- `slang.py` is marked as experimental ("Chay thu nghiem thoi, khong dung khi viet paper")
+- Code comments are primarily in Vietnamese
+- The prompt uses 2026 as the reference year for timeline calculations
+- Ground truth JSON should be used for evaluation (CSV loses "N/A" as NaN)
+- `code/slang.py` is experimental and not part of the main pipeline

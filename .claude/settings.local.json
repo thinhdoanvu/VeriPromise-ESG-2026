@@ -4,7 +4,16 @@
       "Bash(rsync -avz --exclude '.git' /Users/nhannguyen/Documents/VeriPromise-ESG-2026/ nhan@bysonduong.ddns.net:~/VeriPromise-ESG-2026/)",
       "Bash(git init:*)",
       "Bash(git:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "Bash(conda run:*)",
+      "WebFetch(domain:www.aidea-web.tw)",
+      "WebFetch(domain:veripromiseesg.github.io)",
+      "WebSearch",
+      "WebFetch(domain:cevalbenchmark.com)",
+      "Bash(python:*)",
+      "Bash(ollama list:*)"
     ]
   }
 }
