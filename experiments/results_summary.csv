@@ -1,0 +1,16 @@
+﻿STAGE 2: Multi-Task BERT Results
+Model,Promise F1,Evidence F1,Quality Macro-F1,Combined,Fold1,Fold2,Fold3,Fold4,Fold5
+chinese-roberta-wwm-ext-large,0.9237,0.9123,0.7729,0.8576,0.8750,0.8294,0.8673,0.8428,0.8734
+bert-base-chinese,0.9162,0.9241,0.7680,0.8580,0.8583,0.8471,0.8754,0.8696,0.8394
+chinese-macbert-large,0.9177,0.9186,0.7210,0.8370,0.8492,0.8389,0.8328,0.8168,0.8475
+
+STAGE 1: Single-Task BERT Results
+Model,Task,Argmax F1,Threshold-Tuned F1,Best Threshold
+bert-base-chinese,promise,0.6997,0.9193,0.32
+chinese-macbert-large,promise,0.8187,0.9203,0.31
+chinese-roberta-wwm-ext-large,promise,0.6719,0.9254,0.29
+bert-base-chinese+chinese-macbert-large+chinese-roberta-wwm-ext-large,promise,0.7773,0.9256,0.28
+bert-base-chinese,evidence,0.8739,0.9213,0.35
+chinese-macbert-large,evidence,0.7765,0.9158,0.30
+chinese-roberta-wwm-ext-large,evidence,0.8103,0.9163,0.30
+bert-base-chinese+chinese-macbert-large+chinese-roberta-wwm-ext-large,evidence,0.8777,0.9215,0.35
