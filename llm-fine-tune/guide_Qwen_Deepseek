@@ -168,8 +168,9 @@ qwen2.5-72b  → ~144GB RAM
 deepseek-70b → ~140GB RAM
 ```
 Bước 1: Đóng bớt ứng dụng đang chạy để giải phóng 30GB
-Bước 2: Merge tuần tự, xóa RAM sau mỗi model
+Bước 2: Merge tuần tự, xóa RAM sau mỗi model (chạy file merge_....py) + xóa các folder checkpoints đã lưu cho nhẹ máy
 Bước 3: Với 72b và 70b — dùng device_map="auto" để tận dụng cả 128GB RAM + 96GB VRAM (GPU)
+
 Thay vì device_map="cpu"
 Dùng kết hợp RAM + VRAM (96GB VRAM + 98GB RAM = ~194GB)
 
@@ -277,7 +278,7 @@ deepseek-70b → ~140GB
 
 ---
 
-6. Sau đó quantize để giảm size (tùy VRAM):
+6. Sau đó quantize để giảm size (tùy VRAM): quantize.bat
 
 Build llama.cpp trước (Windows)
 Vẫn đang trong thư mục: `D:\LLMs\llama.cpp`

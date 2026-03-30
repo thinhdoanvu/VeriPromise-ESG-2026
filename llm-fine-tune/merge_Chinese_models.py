@@ -21,18 +21,18 @@ MAX_MEMORY = {
 }
 
 MODELS = [
-    # ✅ Đã merge — comment lại
+    # ✅ Đã merge — comment lại: lưu ý đúng folder esg-lora-v3 do có nhiều lần train khác nhau
     # {
     #     "name": "qwen2.5-14b",
     #     "base_path":   r"D:\LLMs\Qwen2.5-14B",
-    #     "lora_path":   r"D:\LLMs\Qwen2.5-14B\esg-lora-v1",
+    #     "lora_path":   r"D:\LLMs\Qwen2.5-14B\esg-lora-v3",
     #     "merged_path": r"D:\LLMs\Qwen2.5-14B\esg-merged",
     #     "need_offload": False,   # 28GB — đủ RAM
     # },
     # {
     #     "name": "qwen2.5-32b",
     #     "base_path":   r"D:\LLMs\Qwen2.5-32B",
-    #     "lora_path":   r"D:\LLMs\Qwen2.5-32B\esg-lora-v1",
+    #     "lora_path":   r"D:\LLMs\Qwen2.5-32B\esg-lora-v3",
     #     "merged_path": r"D:\LLMs\Qwen2.5-32B\esg-merged",
     #     "need_offload": False,   # 65GB — đủ RAM
     # },
@@ -41,7 +41,7 @@ MODELS = [
     # {
     #     "name": "qwen2.5-72b",
     #     "base_path":   r"D:\LLMs\Qwen2.5-72B",
-    #     "lora_path":   r"D:\LLMs\Qwen2.5-72B\esg-lora-v1",
+    #     "lora_path":   r"D:\LLMs\Qwen2.5-72B\esg-lora-v3",
     #     "merged_path": r"D:\LLMs\Qwen2.5-72B\esg-merged",
     #     "need_offload": True,    # 144GB — cần offload sang NVMe
     # },
@@ -50,7 +50,7 @@ MODELS = [
     {
         "name": "deepseek-r1-70b",
         "base_path":   r"D:\LLMs\DeepSeek-R1-70B",
-        "lora_path":   r"D:\LLMs\DeepSeek-R1-70B\esg-lora-v1",
+        "lora_path":   r"D:\LLMs\DeepSeek-R1-70B\esg-lora-v3",
         "merged_path": r"D:\LLMs\DeepSeek-R1-70B\esg-merged",
         "need_offload": True,    # 140GB — cần offload sang NVMe
     },
@@ -159,5 +159,4 @@ if __name__ == "__main__":
         print(f"  → {cfg['merged_path']}")
 
     print("\n⏭️  Bước tiếp theo: Convert sang GGUF bằng llama.cpp")
-    print("   cd D:\\LLMs\\llama.cpp")
-    print("   python convert_hf_to_gguf.py <merged_path> --outtype f16")
+    print("2. GGUF:     quantize_all.bat")
