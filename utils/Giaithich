@@ -1,0 +1,64 @@
+RAG không thay LLM — RAG hỗ trợ LLM
+Không có RAG:
+  Input → LLM → Answer
+  LLM tự suy luận từ kiến thức đã học
+
+Có RAG:
+  Input → Retrieve examples → LLM → Answer
+  LLM được cung cấp thêm examples liên quan → suy luận tốt hơn
+
+Cụ thể trong script
+python# RAG làm việc này:
+examples = retrieve_balanced(col_s3, data, "s3", k=6)
+
+# Biến examples thành few-shot prompt:
+prompt = """
+Statement: 台泥致力於低碳轉型...    ← example 1 (Not Clear)
+Answer: Not Clear
+
+Statement: 富邦人壽不再新增投資...   ← example 2 (Clear)
+Answer: Clear
+
+Statement: [INPUT CỦA BẠN]          ← câu cần predict
+Answer:
+"""
+
+# LLM đọc prompt này và trả lời
+result = ollama_predict("qwen2.5-14b-esg", prompt, ...)
+```
+
+---
+
+### Tóm lại
+```
+RAG  = tìm examples phù hợp từ training data
+LLM  = đọc examples đó + input → đưa ra quyết định
+
+RAG không predict → LLM mới predict
+RAG chỉ cung cấp context cho LLM
+Giống như bạn đi thi có phiếu ghi chú — phiếu là RAG, bạn vẫn phải tự trả lời! 😄
+
+=================================================================================
+conda activate NLP
+python main_pipeline.py \
+  --test  "C:\Users\VU\Documents\NLP\AICup26\datasets\vpesg4k_train_1000 V1_test200.csv" \
+  --train "C:\Users\VU\Documents\NLP\AICup26\datasets\vpesg4k_train_1000 V1.json"
+```
+
+---
+
+### Flow pipeline
+```
+test CSV row
+  ↓
+[BERT MacBERT S1] → promise_status = No → build_output_row(No) → STOP
+  ↓ Yes
+[BERT RoBERTa S2] → evidence_status
+  ↓
+[ChromaDB retrieve] → 6 examples S3
+[Council LLM S3]   → evidence_quality
+  ↓
+[ChromaDB retrieve] → 6 examples S4
+[Council LLM S4]   → verification_timeline
+  ↓
+build_output_row() → 1 row đúng format
